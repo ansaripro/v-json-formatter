@@ -1,0 +1,54 @@
+{
+  "name": "v-json-formatter",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "keywords": [
+    "json",
+    "formatter",
+    "transformation",
+    "editor",
+    "vue3",
+    "vue",
+    "vuejs"
+  ],
+  "files": [
+    "dist"
+  ],
+  "main": "./dist/v-json-formatter.umd.cjs",
+  "module": "./dist/v-json-formatter.js",
+  "exports": {
+    ".": {
+      "import": "./dist/v-json-formatter.js",
+      "require": "./dist/v-json-formatter.umd.cjs"
+    },
+    "./dist/style.css": {
+      "import": "./dist/style.css",
+      "require": "./dist/style.css"
+    }
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/ansaripro/v-json-formatter.git"
+  },
+  "scripts": {
+    "dev": "vite",
+    "build": "vue-tsc && vite build",
+    "preview": "vite preview"
+  },
+  "dependencies": {
+    "vue": "^3.4.21",
+    "vuedraggable": "^4.1.0"
+  },
+  "peerDependencies": {
+    "vue": "^3.4.21",
+    "vuedraggable": "^4.1.0"
+  },
+  "devDependencies": {
+    "@types/node": "^22.4.1",
+    "@vitejs/plugin-vue": "^5.0.4",
+    "typescript": "^5.2.2",
+    "vite": "^5.2.0",
+    "vue-tsc": "^2.0.6"
+  }
+}

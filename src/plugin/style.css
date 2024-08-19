@@ -1,0 +1,328 @@
+.v-json-formmatter {
+  width: 100%;
+  height: 100%;
+}
+.v-json-formmatter .border {
+  border: 1px solid rgb(219, 219, 219);
+}
+.v-json-formmatter .container {
+  display: flex;
+  flex-direction: row;
+  margin-top: 4px;
+}
+.v-json-formmatter .container > .left-panel {
+  width: 49.5%;
+  margin-right: 0.5%;
+  padding: 4px 8px;
+}
+.v-json-formmatter .container > .right-panel {
+  width: 49.5%;
+  margin-left: 0.5%;
+  padding: 4px 8px;
+}
+.v-json-formmatter .container .title-bar {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+}
+.v-json-formmatter .container .title-bar h6 {
+  font-size: medium;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  font-weight: normal;
+}
+.v-json-formmatter .divider {
+  width: 100%;
+  border-top: 1px solid rgb(219, 219, 219);
+  margin: 8px 0;
+}
+.v-json-formmatter .panel {
+  padding: 0 20px;
+  width: calc(100% - 40px);
+  overflow: auto;
+}
+.v-json-formmatter button {
+  padding: 2px 8px;
+  margin: 0 2px;
+  border: 1px solid rgb(219 219 219);
+  background-color: rgb(214 214 214);
+  border-radius: 6px;
+}
+
+.v-json-formatter-tooltip {
+  position: relative;
+}
+.v-json-formatter-tooltip .tooltip {
+  visibility: hidden;
+  min-width: 50px;
+  background-color: rgb(85, 85, 85);
+  color: rgb(255, 255, 255);
+  text-align: center;
+  border-radius: 6px;
+  padding: 3px 8px 5px;
+  font-size: x-small;
+  font-weight: normal;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+
+  /* Position the tooltip text */
+  position: absolute;
+  z-index: 1;
+  bottom: 125%;
+  left: 0;
+  margin-left: -175%;
+
+  /* Fade in tooltip */
+  opacity: 0;
+  transition: opacity 0.3s;
+}
+.v-json-formatter-tooltip .tooltip::after {
+  content: "";
+  position: absolute;
+  top: 100%;
+  left: 50%;
+  margin-left: -5px;
+  border-width: 5px;
+  border-style: solid;
+  border-color: rgb(85, 85, 85) transparent transparent transparent;
+}
+.v-json-formatter-tooltip:hover .tooltip {
+  visibility: visible;
+  opacity: 1;
+}
+
+.v-json-formatter .cyan {
+  color: cyan;
+}
+.v-json-formatter .blue {
+  color: blue;
+}
+.v-json-formatter .red {
+  color: red;
+}
+.v-json-formatter .indigo {
+  color: indigo;
+}
+.v-json-formatter .purple {
+  color: purple;
+}
+.v-json-formatter .brown {
+  color: brown;
+}
+.v-json-formatter .light-green {
+  color: lightgreen;
+}
+
+ul.v-json-formatter,
+ul.v-json-formatter ul {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+ul.v-json-formatter ul {
+  margin-left: 35px;
+}
+
+ul.v-json-formatter li {
+  margin: 0;
+  padding: 0 7px;
+  border-left: 1px solid rgba(100, 100, 100, 0.3);
+}
+
+ul.v-json-formatter li:last-child {
+  border-left: none;
+}
+
+ul.v-json-formatter li:before {
+  position: relative;
+  top: -0.2em;
+  height: 1.6em;
+  width: 12px;
+  color: white;
+  border-bottom: 1px solid rgba(100, 100, 100, 0.3);
+  content: "";
+  display: inline-block;
+  left: -7px;
+}
+
+ul.v-json-formatter li:last-child:before {
+  border-left: 1px solid rgba(100, 100, 100, 0.3);
+}
+
+ul.v-json-formatter li > span {
+  display: inline-flex;
+  align-items: center;
+  padding: 2px 0;
+}
+
+ul.v-json-formatter li > span > code {
+  padding: 0 4px;
+}
+
+ul.v-json-formatter li .btn-space {
+  margin-left: 8px;
+}
+
+ul.v-json-formatter li .pre-operator {
+  font-weight: 900;
+  font-size: 12px;
+  margin: 0 4px 0 -8px;
+  text-align: center;
+}
+
+.v-json-editor {
+  margin-bottom: 10px;
+  border: 1px solid rgb(139, 139, 139);
+  overflow: auto;
+}
+
+.v-json-editor-line-border {
+  position: sticky;
+  left: 0;
+  top: 0;
+  width: 25px;
+  padding: 0 10px;
+  height: 100%;
+  background-color: rgb(235, 235, 235);
+  float: left;
+}
+
+.v-json-editor-line-numbers {
+  position: sticky;
+  left: 0;
+  top: 0;
+  margin-left: -45px;
+  width: 25px;
+  min-height: auto;
+  padding: 10px;
+  float: left;
+}
+
+.v-json-editor-line-numbers>span {
+  width: 100%;
+  display: block;
+  text-align: right;
+  color: rgb(178, 178, 178);
+  margin: 2px 0;
+  padding: 2px;
+  line-height: 24px;
+  min-height: 24px;
+}
+
+.v-json-editor-container {
+  width: calc(100% - 65px);
+  min-height: 100px;
+  padding: 10px;
+  margin-left: 45px;
+}
+
+.v-json-editor-container:focus-visible {
+  outline: unset;
+}
+
+.v-json-editor-container>div {
+  margin: 2px 0;
+  padding: 2px;
+  line-height: 24px;
+  height: 24px;
+}
+
+.v-json-editor-error-line {
+  background-color: rgba(255, 0, 0, 0.3);
+}
+
+.v-json-editor-error {
+  background-color: rgba(255, 0, 0, 0.8);
+  color: rgb(255, 255, 255);
+  margin: 0;
+  padding: 8px;
+}
+
+.v-json-modal-mask {
+  position: fixed;
+  z-index: 9998;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  transition: opacity 0.3s ease;
+}
+
+.v-json-modal-mask .modal-container {
+  max-width: 90vw;
+  min-width: 40vw;
+  max-height: 90vh;
+  margin: auto;
+  overflow: auto;
+  padding: 20px 30px;
+  background-color: #fff;
+  border-radius: 2px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.33);
+  transition: all 0.3s ease;
+}
+
+.v-json-modal-mask .modal-row {
+  display: flex;
+  width: 100%;
+}
+.v-json-modal-mask .divider {
+  width: 100%;
+  border-top: 1px solid rgb(219, 219, 219);
+  margin: 8px 0;
+}
+.v-json-modal-mask .row-space {
+  padding: 5px 0;
+}
+.v-json-modal-mask .justify-space-between {
+  justify-content: space-between;
+}
+.v-json-modal-mask .action-row {
+  justify-content: end;
+  padding: 20px 0 10px;
+}
+.v-json-modal-mask label {
+  display: inline-block;
+  padding: 2px 5px;
+  width: 100px;
+}
+.v-json-modal-mask input {
+  padding: 5px;
+  width: 250px;
+}
+.v-json-modal-mask select {
+  padding: 5px;
+  width: 263px;
+}
+.v-json-modal-mask .action-row button {
+  padding: 5px 10px;
+  margin: 0 2px;
+  border: 1px solid rgb(219 219 219);
+  background-color: rgb(214 214 214);
+  border-radius: 6px;
+}
+.v-json-modal-mask .modal-row .button-group {
+  display: flex;
+  justify-items: end;
+  margin-bottom: 4px;
+}
+.v-json-modal-mask .modal-row .button-group button {
+  padding: 5px 10px;
+  margin: 0;
+  border: 1px solid rgb(203 203 203);
+  background-color: rgb(214 214 214);
+}
+
+.modal-enter-from {
+  opacity: 0;
+}
+
+.modal-leave-to {
+  opacity: 0;
+}
+
+.modal-enter-from .modal-container,
+.modal-leave-to .modal-container {
+  -webkit-transform: scale(1.1);
+  transform: scale(1.1);
+}
