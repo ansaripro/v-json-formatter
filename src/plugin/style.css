@@ -89,17 +89,14 @@
   opacity: 1;
 }
 
-.v-json-formatter .cyan {
-  color: cyan;
-}
 .v-json-formatter .blue {
   color: blue;
 }
 .v-json-formatter .red {
   color: red;
 }
-.v-json-formatter .indigo {
-  color: indigo;
+.v-json-formatter .darkgold {
+  color: darkgoldenrod;
 }
 .v-json-formatter .purple {
   color: purple;
@@ -107,8 +104,8 @@
 .v-json-formatter .brown {
   color: brown;
 }
-.v-json-formatter .light-green {
-  color: lightgreen;
+.v-json-formatter .green {
+  color: green;
 }
 
 ul.v-json-formatter,

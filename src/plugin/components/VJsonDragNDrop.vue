@@ -201,7 +201,7 @@ function convert(convertType: string, pJson: any, rootPath: string, parentType?:
                         isOpen: true,
                         children: convertChild(convertType, p, `${rootPath}[${i}]`, 'object'),
                     };
-                    o.children.push(x);
+                    o.children?.push(x);
                 });
             }
         }
@@ -264,7 +264,6 @@ function convertChild(convertType: string, pJson: any, rootPath: string, parentT
                 disabled: false,
                 isCustom: convertType !== 'dragItems',
                 isOpen: false,
-                children: [],
             });
         }
     });
@@ -327,18 +326,26 @@ function onEditPropSave() {
     if (editObj.isCustom) {
         editObj.refObj.path = '';
         editObj.refObj.type = editObj.selectedType.type;
-        editObj.refObj.children = [];
+        editObj.refObj.children = undefined;
 
         switch (editObj.selectedType.key) {
-            case 'number':
-                editObj.refObj.value = Number(editObj.value);
-                break;
             case 'array':
                 try {
                     editObj.refObj.value = JSON.parse(editObj.value);
                 } catch {
                     editObj.refObj.value = [];
                 }
+                editObj.refObj.children = [];
+                break;
+            case 'object':
+                editObj.refObj.value = {};
+                editObj.refObj.children = [];
+                break;
+            case 'number':
+                editObj.refObj.value = Number(editObj.value);
+                break;
+            case 'boolean':
+                editObj.refObj.value = Boolean(editObj.value);
                 break;
             default:
                 if (editObj.selectedType.placeholderToken) {
@@ -411,17 +418,17 @@ function viewJson(panel: string) {
         dialogObj.show = true;
     }
 };
-function viewJsonChilds(prop: JsonProperty, children: JsonProperty[]): any {
-    if (prop.type === 'array' && children?.length > 0) {
+function viewJsonChilds(prop: JsonProperty, children?: JsonProperty[]): any {
+    if (prop.type === 'array' && (children?.length ?? 0) > 0) {
         const arr: any[] = [];
-        children.forEach(x => {
+        children?.forEach(x => {
             const o = viewJsonChilds(x, x.children);
             if (o !== null) arr.push(o);
         });
         return arr;
-    } else if (children?.length > 0) {
+    } else if ((children?.length ?? 0) > 0) {
         const obj: any = {};
-        children.forEach(x => {
+        children?.forEach(x => {
             if ((x.path?.length ?? 0) > 0) obj[x.key] = viewJsonChilds(x, x.children) ?? x.path;
             else obj[x.key] = viewJsonChilds(x, x.children) ?? x.value;
         });

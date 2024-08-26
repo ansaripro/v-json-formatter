@@ -62,7 +62,7 @@ export interface JsonProperty {
     disabled: boolean,
     isCustom: boolean,
     isOpen: boolean,
-    children: JsonProperty[],
+    children?: JsonProperty[],
 }
 
 export interface PropertyTypeItem {

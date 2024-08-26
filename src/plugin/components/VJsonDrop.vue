@@ -77,7 +77,7 @@ function localCanAddProp(element: JsonProperty) {
 function localAddProp(element: JsonProperty) {
   if (element.type === 'array' || element.type === 'object') {
     jsonNodeId.value += 1;
-    element.children.splice(0, 0, {
+    element.children?.splice(0, 0, {
       id: jsonNodeId.value,
       key: element.type === 'object' ? `Property ${jsonNodeId.value}` : '',
       path: '',
@@ -148,18 +148,18 @@ function onPastePath(item: JsonProperty) {
       <template #item="{ element, index }">
           <li v-if="isOpen">
               <span>
-                  <span class="pre-operator" :class="getPreOperator(element) === '■'? 'cyan' : 'blue'">{{ getPreOperator(element) }}</span>
+                  <span class="pre-operator purple">{{ getPreOperator(element) }}</span>
                   <i class="fa-solid"
                     :class="element.isOpen ? 'fa-chevron-down' : 'fa-chevron-right'"
                     @click="element.isOpen = !element.isOpen"
                     v-if="element.children?.length > 0 && (element.type === 'object' || element.type === 'array')"/>
                   <code>
-                      <span v-show="element.key?.length > 0" class="red">{{ element.key }}: </span>
-                      <span class="purple" v-if="element.path?.length > 0">
+                      <span v-show="element.key?.length > 0" class="blue">{{ element.key }}: </span>
+                      <span class="darkgold" v-if="element.path?.length > 0">
                           {{ element.path }}
                       </span>
-                      <span class="indigo" v-else-if="element.type === 'string'">"{{ element.value }}"</span>
-                      <span class="light-green" v-else-if="getPreOperator(element) === '■'">{{ element.value }}</span>
+                      <span class="red" v-else-if="element.type === 'string'">"{{ element.value }}"</span>
+                      <span class="green" v-else-if="getPreOperator(element) === '■'">{{ element.value }}</span>
                       <span class="brown" v-else-if="element.type === 'array' && element.children?.length === 0 && element.value?.length > 0">{{ element.value }}</span>
                       <i class="fa-solid fa-plus v-json-formatter-tooltip btn-space" @click="localAddProp(element)" v-if="localCanAddProp(element)">
                         <span class="tooltip">Add</span>
