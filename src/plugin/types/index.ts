@@ -44,7 +44,7 @@ export interface JsonDragNDropProps {
 }
 
 export type JTypes = 'string' | 'number' | 'boolean' | 'object' | 'array';
-export type JTypeNature = 'value' | 'object';
+export type JParentType = 'array' | 'object';
 
 export interface PlaceholderItem {
     title: string,
@@ -58,7 +58,7 @@ export interface JsonProperty {
     path?: string | null,
     value?: any,
     type: JTypes,
-    typeNature?: JTypeNature,
+    parentType?: JParentType,
     disabled: boolean,
     isCustom: boolean,
     isOpen: boolean,
@@ -71,7 +71,6 @@ export interface PropertyTypeItem {
     title: string,
     canEdit: boolean,
     hide: boolean,
-    typeNature?: JTypeNature,
     placeholderToken?: string,
 }
 

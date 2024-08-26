@@ -65,8 +65,8 @@
 
   /* Position the tooltip text */
   position: absolute;
-  z-index: 1;
-  bottom: 125%;
+  z-index: 9999;
+  top: 125%;
   left: 0;
   margin-left: -175%;
 
@@ -77,12 +77,12 @@
 .v-json-formatter-tooltip .tooltip::after {
   content: "";
   position: absolute;
-  top: 100%;
+  bottom: 100%;
   left: 50%;
   margin-left: -5px;
   border-width: 5px;
   border-style: solid;
-  border-color: rgb(85, 85, 85) transparent transparent transparent;
+  border-color: transparent transparent rgb(85, 85, 85) transparent;
 }
 .v-json-formatter-tooltip:hover .tooltip {
   visibility: visible;

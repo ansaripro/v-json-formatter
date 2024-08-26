@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { computed } from 'vue'
-import type { JsonDropProps, JsonProperty, EditJProperty, JEvent } from '../types/index'
+import type { JsonDropProps, JsonProperty, EditJProperty, JEvent, JParentType } from '../types/index'
 import Draggable from 'vuedraggable';
 
 const props = withDefaults(defineProps<JsonDropProps>(), { 
@@ -40,69 +40,56 @@ const jsonNodeId = computed<number>({
 function getPreOperator(obj: JsonProperty) {
   let operator = '■';
   if (obj) {
-      switch (obj.type) {
-          case 'object':
-              operator = '{ }';
-              break;
-          case 'array':
-              operator = '[ ]';
-              break;
-          default:
-              break;
-      }
+    switch (obj.type) {
+      case 'object':
+        operator = '{ }';
+        break;
+      case 'array':
+        operator = '[ ]';
+        break;
+      default:
+        break;
+    }
   }
   return operator;
 };
-function rootAddProp() {
-  const arr = jsonModel.value;
+function rootAddProp(type: JParentType) {
   jsonNodeId.value += 1;
-  const obj: JsonProperty = {
-      id: jsonNodeId.value,
-      key: `Property ${jsonNodeId.value}`,
-      path: '',
-      value: '',
-      type: 'string',
-      isCustom: true,
-      isOpen: true,
-      disabled: false,
-      children: [],
+  const o: JsonProperty = {
+    id: jsonNodeId.value,
+    key: '',
+    path: '',
+    value: type === 'object' ? {} : [],
+    type: type,
+    isCustom: false,
+    isOpen: true,
+    disabled: true,
+    children: [],
   };
-  arr.splice(0, 0, obj);
-  jsonModel.value = arr;
+  localAddProp(o);
+  jsonModel.value = [o];
 };
 function localCanAddProp(element: JsonProperty) {
-  return element.path?.length === 0 && (element.type === 'object' || element.typeNature === 'object');
+  return element.path?.length === 0 && (element.type === 'object' || 
+    (element.type === 'array' && !(element.children?.length === 0 && element.value?.length > 0))
+  );
 };
 function localAddProp(element: JsonProperty) {
-  jsonNodeId.value += 1;
-  let obj: JsonProperty;
-  if (element.type !== 'array') {
-    obj = {
+  if (element.type === 'array' || element.type === 'object') {
+    jsonNodeId.value += 1;
+    element.children.splice(0, 0, {
       id: jsonNodeId.value,
-      key: `Property ${jsonNodeId.value}`,
+      key: element.type === 'object' ? `Property ${jsonNodeId.value}` : '',
       path: '',
       value: '',
-      type: 'string',
+      type: element.type === 'object' ? 'string' : 'object',
+      parentType: element.type,
       isCustom: true,
       disabled: false,
       isOpen: true,
       children: [],
-    };
-  } else {
-    obj = {
-      id: jsonNodeId.value,
-      key: '',
-      path: '',
-      value: '',
-      type: 'object',
-      typeNature: 'object',
-      isCustom: true,
-      disabled: false,
-      isOpen: true,
-      children: [],
-    };
+    });
   }
-  element.children.splice(0, 0, obj);
 };
 function localEditProp(element: JsonProperty, index: number) {
   editProp({
@@ -138,7 +125,7 @@ function onPastePath(item: JsonProperty) {
   item.path = props.copyItem.path;
   item.value = props.copyItem.value;
   item.type = props.copyItem.type;
-  item.typeNature = props.copyItem.typeNature;
+  item.parentType = props.copyItem.parentType;
   item.children = [];
   item.isCustom = false;
   jEvt.messageType = 'success';
@@ -148,7 +135,10 @@ function onPastePath(item: JsonProperty) {
 </script>
 
 <template>
-  <i class="fa-solid fa-plus" style="margin-left: -7px;" @click="rootAddProp" v-if="level === 0"/>
+  <div style="display: flex; flex-direction: row;" v-if="level === 0 && jsonModel?.length === 0">
+    <button type="button" @click="rootAddProp('object')">Create Object</button>
+    <button type="button" @click="rootAddProp('array')">Create Array</button>
+  </div>
   <draggable
       tag="ul"
       item-key="id"
@@ -162,7 +152,7 @@ function onPastePath(item: JsonProperty) {
                   <i class="fa-solid"
                     :class="element.isOpen ? 'fa-chevron-down' : 'fa-chevron-right'"
                     @click="element.isOpen = !element.isOpen"
-                    v-if="element.children?.length > 0 && (element.type === 'object' || element.typeNature === 'object')"/>
+                    v-if="element.children?.length > 0 && (element.type === 'object' || element.type === 'array')"/>
                   <code>
                       <span v-show="element.key?.length > 0" class="red">{{ element.key }}: </span>
                       <span class="purple" v-if="element.path?.length > 0">
@@ -170,11 +160,11 @@ function onPastePath(item: JsonProperty) {
                       </span>
                       <span class="indigo" v-else-if="element.type === 'string'">"{{ element.value }}"</span>
                       <span class="light-green" v-else-if="getPreOperator(element) === '■'">{{ element.value }}</span>
-                      <span class="brown" v-else-if="element.typeNature === 'value'">{{ element.value }}</span>
+                      <span class="brown" v-else-if="element.type === 'array' && element.children?.length === 0 && element.value?.length > 0">{{ element.value }}</span>
                       <i class="fa-solid fa-plus v-json-formatter-tooltip btn-space" @click="localAddProp(element)" v-if="localCanAddProp(element)">
                         <span class="tooltip">Add</span>
                       </i>
-                      <i class="fa-solid fa-pen-to-square v-json-formatter-tooltip btn-space" @click="localEditProp(element, index)" v-if="!(element.type === 'object' && element.typeNature === 'object')">
+                      <i class="fa-solid fa-pen-to-square v-json-formatter-tooltip btn-space" @click="localEditProp(element, index)" v-if="level !== 0 && !(element.type === 'object' && element.parentType === 'array')">
                         <span class="tooltip">Edit</span>
                       </i>
                       <i class="fa-solid fa-paste v-json-formatter-tooltip btn-space" @click="onPastePath(element)" v-if="element.isCustom && element.children?.length === 0">
@@ -185,7 +175,7 @@ function onPastePath(item: JsonProperty) {
                       </i>
                   </code>
               </span>
-              <v-json-drop v-if="!(element.isArray && element.typeNature === 'value')"
+              <v-json-drop v-if="!(element.type === 'array' && element.children?.length === 0 && element.value?.length > 0)"
                   :name="`${name}-${index}`"
                   :type="element.type"
                   :group="element.path?.length === 0 ? group : element.key"

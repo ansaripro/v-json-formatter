@@ -48,7 +48,7 @@ function propClone(obj: JsonProperty): JsonProperty {
       value: obj.value,
       path: obj.path,
       type: obj.type,
-      typeNature: obj.typeNature,
+      parentType: obj.parentType,
       isOpen: true,
       children: recursiveItems(obj.children),
   } as JsonProperty;
@@ -61,7 +61,7 @@ function recursiveItems(items: JsonProperty[]): JsonProperty[] {
         key: x.key,
         value: x.value,
         type: x.type,
-        typeNature: x.typeNature,
+        parentType: x.parentType,
         isOpen: true,
         children: recursiveItems(x.children),
       } as JsonProperty;
@@ -98,10 +98,10 @@ function onCopy(item: JsonProperty) {
                     @click="element.isOpen = !element.isOpen"
                     v-if="element.children?.length > 0"/>
                   <code>
-                      <span class="red">{{ element.key }}: </span>
+                      <span v-show="element.key?.length > 0" class="red">{{ element.key }}: </span>
                       <span class="indigo" v-if="element.type === 'string'">"{{ element.value }}"</span>
                       <span class="light-green" v-else-if="getPreOperator(element) === '■'">{{ element.value }}</span>
-                      <span class="brown" v-else-if="element.isArray && element.typeNature === 'value'">{{ element.value }}</span>
+                      <span class="brown" v-else-if="element.type === 'array' && element.children?.length === 0 && element.value?.length > 0">{{ element.value }}</span>
                       <i class="fa-regular fa-copy v-json-formatter-tooltip btn-space" @click="onCopy(element)" v-if="element.key !== '*'">
                         <span class="tooltip">Copy path</span>
                       </i>

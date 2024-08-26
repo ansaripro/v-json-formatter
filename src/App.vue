@@ -8,6 +8,12 @@ jsonString.value = JSON.stringify(JSON.parse(`{
     "title": "example glossary",
     "GlossDiv": {
       "title": "S",
+      "GlossArray": [
+        {
+          "title": "y",
+          "example": [1,2,3]
+        }
+      ],
       "GlossList": {
         "GlossEntry": {
           "ID": "SGML",

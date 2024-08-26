@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { computed, reactive, ref, watch } from 'vue';
-import type { JsonDragNDropProps, JsonProperty, JTypes, PropertyTypeItem, EditDialog, EditJProperty, ViewDialog, JEvent } from '../types/index';
+import type { JsonDragNDropProps, JsonProperty, JTypes, JParentType, PropertyTypeItem, EditDialog, EditJProperty, ViewDialog, JEvent } from '../types/index';
 import VJsonEditor from './VJsonEditor.vue';
 import VJsonDrag from './VJsonDrag.vue';
 import VJsonDrop from './VJsonDrop.vue';
@@ -65,27 +65,10 @@ const dialogTypes = reactive<PropertyTypeItem[]>([
         hide: false,
     },
     {
-        key: 'childObject',
-        type: 'object',
-        title: 'Object',
-        typeNature: 'object',
-        canEdit: false,
-        hide: true,
-    },
-    {
-        key: 'arrayOfValues',
+        key: 'array',
         type: 'array',
-        title: 'Array of values',
+        title: 'Array',
         canEdit: true,
-        typeNature: 'value',
-        hide: false,
-    },
-    {
-        key: 'arrayOfObjects',
-        type: 'array',
-        title: 'Array of Objects',
-        typeNature: 'object',
-        canEdit: false,
         hide: false,
     },
 ]);
@@ -146,11 +129,11 @@ function getPanelStyle() {
 function convertJSON(json: string, skipResetId: boolean = false) {
     if (!skipResetId) globalId.value = 0;
 
-    let obj = {};
+    let obj;
     try {
         obj = JSON.parse(json);
     } catch { /* empty */ }
-    return obj;
+    return obj || {};
 };
 function getJType(obj: any): JTypes {
     const t = typeof obj;
@@ -172,25 +155,100 @@ function getJType(obj: any): JTypes {
     }
     return jType;
 };
-function convert(convertType: string, pJson: any, rootPath: string): JsonProperty[] {
+function convert(convertType: string, pJson: any, rootPath: string, parentType?: JParentType): JsonProperty[] {
+    const type = getJType(pJson);
+    if (type === 'array') {
+        globalId.value += 1;
+        const o: JsonProperty = {
+            id: globalId.value,
+            key: '',
+            disabled: false,
+            path: convertType === 'dragItems' ? '[*]' : '',
+            value: pJson,
+            type: type,
+            parentType: parentType,
+            isCustom: convertType !== 'dragItems',
+            isOpen: true,
+            children: [],
+        };
+        if (typeof pJson[0] === 'object') {
+            if (convertType === 'dragItems') {
+                globalId.value += 1;
+                o.children = [{
+                    id: globalId.value,
+                    key: '*',
+                    disabled: false,
+                    path: `${rootPath}[*]`,
+                    value: pJson[0],
+                    type: 'object',
+                    parentType: type,
+                    isCustom: true,
+                    isOpen: true,
+                    children: convertChild(convertType, pJson[0], `${rootPath}[*]`, 'object'),
+                }];
+            } else {
+                pJson.forEach((p: any, i: Number) => {
+                    globalId.value += 1;
+                    const x: JsonProperty = {
+                        id: globalId.value,
+                        key: '',
+                        disabled: false,
+                        path: '',
+                        value: p,
+                        type: 'object',
+                        parentType: type,
+                        isCustom: true,
+                        isOpen: true,
+                        children: convertChild(convertType, p, `${rootPath}[${i}]`, 'object'),
+                    };
+                    o.children.push(x);
+                });
+            }
+        }
+        return [o];
+    } else if (type === 'object') return convertChild(convertType, pJson, rootPath, 'object');
+    
+    return [];
+};
+function convertChild(convertType: string, pJson: any, rootPath: string, parentType?: JParentType): JsonProperty[] {
+    const result: JsonProperty[] = [];
     let jObj;
     if (Array.isArray(pJson)) {
         globalId.value += 1;
-        return [{
-            id: globalId.value,
-            key: '*',
-            disabled: true,
-            path: convertType === 'dragItems' ? '[*]' : '',
-            value: pJson[0],
-            type: 'array',
-            typeNature: 'object',
-            isCustom: convertType !== 'dragItems',
-            isOpen: true,
-            children: convert(convertType, pJson[0], `${rootPath}[*]`),
-        }];
+        if (convertType === 'dragItems') {
+            return [{
+                id: globalId.value,
+                key: '*',
+                disabled: true,
+                path: '[*]',
+                value: pJson[0],
+                type: 'object',
+                parentType: parentType,
+                isCustom: false,
+                isOpen: true,
+                children: convertChild(convertType, pJson[0], `${rootPath}[*]`, 'object'),
+            }];
+        } else {
+            pJson.forEach((p: any, i: Number) => {
+                globalId.value += 1;
+                const x: JsonProperty = {
+                    id: globalId.value,
+                    key: '',
+                    disabled: false,
+                    path: '',
+                    value: p,
+                    type: 'object',
+                    parentType: parentType,
+                    isCustom: true,
+                    isOpen: true,
+                    children: convertChild(convertType, p, `${rootPath}[${i}]`, 'object'),
+                };
+                result.push(x);
+            });
+            return result
+        }
     } else jObj = pJson;
 
-    const result: JsonProperty[] = [];
     const props = Object.getOwnPropertyNames(jObj);
     props.forEach(p => {
         const t = getJType(pJson[p]);
@@ -202,6 +260,7 @@ function convert(convertType: string, pJson: any, rootPath: string): JsonPropert
                 path: convertType === 'dragItems' ? `${rootPath}.${p}` : '',
                 value: jObj[p],
                 type: t,
+                parentType: parentType,
                 disabled: false,
                 isCustom: convertType !== 'dragItems',
                 isOpen: false,
@@ -212,12 +271,13 @@ function convert(convertType: string, pJson: any, rootPath: string): JsonPropert
     if (result.length !== props.length) {
         props.forEach(p => {
             const t = getJType(pJson[p]);
-            if ((t === 'object' || t === 'array') && (convertType !== 'dragItems' || rootPath !== '$' || isChildVisible(p))) {
+            if (t === 'object' || t === 'array') {
                 globalId.value += 1;
                 const o: JsonProperty = {
                     id: globalId.value,
                     key: p,
                     type: t,
+                    parentType: parentType,
                     path: convertType === 'dragItems' ? `${rootPath}.${p}` : '',
                     value: jObj[p],
                     isCustom: convertType !== 'dragItems',
@@ -229,31 +289,15 @@ function convert(convertType: string, pJson: any, rootPath: string): JsonPropert
                     o.isOpen = jObj[p].length > 0;
                     if (jObj[p].length > 0) {
                         if (typeof jObj[p][0] === 'object') {
-                            o.typeNature = 'object';
-                            o.children = convert(convertType, jObj[p], `${rootPath}.${p}`);
-                        } else o.typeNature = 'value';
+                            o.children = convertChild(convertType, jObj[p], `${rootPath}.${p}`, 'array');
+                        }
                     }
-                } else o.children = convert(convertType, jObj[p], `${rootPath}.${p}`);
+                } else o.children = convertChild(convertType, jObj[p], `${rootPath}.${p}`, 'object');
                 result.push(o);
             }
         });
     }
     return result;
-};
-function isChildVisible(_: string) {
-    return true;
-    // if (!props.defaultHideChildProperties) return true;
-
-    // let flag = false;
-    // if (props.visibleChildProperties.length > 0) {
-    //     props.visibleChildProperties.forEach(p => {
-    //         if (p === pName || `${p}s` === pName) {
-    //             flag = true;
-    //             return;
-    //         }
-    //     });
-    // }
-    // return flag;
 };
 function onCopy(item: JsonProperty) {
     copyContainer.value = item;
@@ -264,15 +308,14 @@ function editProp(obj: EditJProperty) {
     editObj.key = obj.element.key;
     editObj.isCustom = obj.element.isCustom;
     if (obj.element.type === 'array') {
-        editObj.selectedType = dialogTypes.find(x => x.key === obj.element.typeNature);
-        editObj.value = obj.element.typeNature === 'value' ? JSON.stringify(obj.element.value) : '';
+        editObj.selectedType = dialogTypes.find(x => x.type === obj.element.type);
+        editObj.value = obj.element.children?.length === 0 ? JSON.stringify(obj.element.value) : '';
     } else if ((obj.element.path?.length ?? 0) > 0) {
         editObj.selectedType = dialogTypes.find(x => x.placeholderToken === obj.element.path);
         if (!editObj.selectedType) editObj.selectedType = dialogTypes.find(x => x.type === obj.element.type);
         editObj.value = obj.element.value;
     } else {
-        editObj.selectedType = dialogTypes.find(x => x.key === obj.element.typeNature);
-        if (!editObj.selectedType) editObj.selectedType = dialogTypes.find(x => x.type === obj.element.type);
+        editObj.selectedType = dialogTypes.find(x => x.type === obj.element.type);
         editObj.value = obj.element.value;
     }
     dialogObj.type = 'editProp';
@@ -284,36 +327,17 @@ function onEditPropSave() {
     if (editObj.isCustom) {
         editObj.refObj.path = '';
         editObj.refObj.type = editObj.selectedType.type;
-        editObj.refObj.typeNature = editObj.selectedType.typeNature;
         editObj.refObj.children = [];
 
         switch (editObj.selectedType.key) {
             case 'number':
                 editObj.refObj.value = Number(editObj.value);
                 break;
-            case 'arrayOfObjects':
-                globalId.value += 1;
-                editObj.refObj.children = [
-                    {
-                        id: globalId.value,
-                        key: '',
-                        disabled: true,
-                        path: '',
-                        value: {},
-                        type: 'object',
-                        typeNature: 'object',
-                        isCustom: true,
-                        isOpen: true,
-                        children: [],
-                    }
-                ];
-                editObj.refObj.value = [{}];
-                break;
-            case 'arrayOfValues':
+            case 'array':
                 try {
                     editObj.refObj.value = JSON.parse(editObj.value);
                 } catch {
-                    editObj.refObj.value = null;
+                    editObj.refObj.value = [];
                 }
                 break;
             default:
@@ -332,7 +356,7 @@ function onImport(func: Function) {
     if (!func()) return;
 
     const obj = convertJSON(viewObj.value.modelValue, true);
-    if (obj) jsonModel.value = convert('importJSON', obj, '');
+    if (obj) jsonModel.value = convert('importJSON', obj, '$');
     else {
         const jEvt: JEvent = {
             name: 'JEditor:Import',
@@ -352,6 +376,7 @@ function importJson() {
 };
 function viewJson(panel: string) {
     const jEvt: JEvent = { name: `${panel}:ViewJSON` };
+    debugger;
     if (panel === 'JDrag') {
         if (items.value.length === 0) {
             jEvt.messageType = 'warning';
@@ -359,10 +384,15 @@ function viewJson(panel: string) {
             emit('event', jEvt);
             return;
         }
-        const jObj: any = {};
-        items.value.forEach(x => {
-            jObj[x.key] = x.value;
-        });
+        let jObj: any;
+        if (items.value.length === 1 && items.value[0].type === 'array') {
+            jObj = items.value[0].value;
+        } else {
+            jObj = {};
+            items.value.forEach(x => {
+                jObj[x.key] = x.value;
+            });
+        }
         viewObj.value.modelValue = JSON.stringify(jObj, null, 2);
         viewObj.value.isEdit = false;
         dialogObj.type = 'viewJson';
@@ -374,11 +404,7 @@ function viewJson(panel: string) {
             emit('event', jEvt);
             return;
         }
-        const jObj: any = {};
-        jsonModel.value.forEach(x => {
-            if ((x.path?.length ?? 0) > 0) jObj[x.key] = viewJsonChilds(x, x.children) ?? x.path;
-            else jObj[x.key] = viewJsonChilds(x, x.children) ?? x.value;
-        });
+        const jObj: any = viewJsonChilds(jsonModel.value[0], jsonModel.value[0].children);
         viewObj.value.modelValue = JSON.stringify(jObj, null, 2);
         viewObj.value.isEdit = false;
         dialogObj.type = 'viewJson';
