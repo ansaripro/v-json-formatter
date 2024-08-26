@@ -455,8 +455,13 @@ function viewJsonChilds(prop: JsonProperty, children?: JsonProperty[]): any {
                 </div>
                 <div class="divider" />
                 <div class="panel" :style="getPanelStyle()">
-                    <v-json-drag ref="jdrag" :group="group" v-model="items"
-                        @copy="onCopy" />
+                    <v-json-drag 
+                        :group="group"
+                        :expand-icon="expandIcon"
+                        :collapsed-icon="collapsedIcon"
+                        :copy-icon="copyIcon"
+                        v-model="items"
+                        @copy="onCopy"/>
                 </div>
             </div>
             <div class="right-panel border">
@@ -475,8 +480,20 @@ function viewJsonChilds(prop: JsonProperty, children?: JsonProperty[]): any {
                 </div>
                 <div class="divider" />
                 <div class="panel" :style="getPanelStyle()">
-                    <v-json-drop ref="jdrop" :group="group" :copy-item="copyContainer" v-model:global-id="globalId" v-model="jsonModel"
-                        @edit-property="editProp" @event="emit('event', $event)" />
+                    <v-json-drop 
+                        :group="group"
+                        :expand-icon="expandIcon"
+                        :collapsed-icon="collapsedIcon"
+                        :copy-icon="copyIcon"
+                        :copy-item="copyContainer"
+                        :paste-icon="pasteIcon"
+                        :add-icon="addIcon"
+                        :edit-icon="editIcon"
+                        :delete-icon="deleteIcon"
+                        v-model:global-id="globalId"
+                        v-model="jsonModel"
+                        @edit-property="editProp"
+                        @event="emit('event', $event)" />
                 </div>
             </div>
         </div>
@@ -516,11 +533,11 @@ function viewJsonChilds(prop: JsonProperty, children?: JsonProperty[]): any {
                     </div>
                     <div class="modal-row action-row">
                         <button type="button" @click="onEditPropSave">
-                            <i class="fa-regular fa-floppy-disk"></i>
+                            <i :class="saveIcon"></i>
                             Update
                         </button>
                         <button type="button" @click="dialogObj.show = false">
-                            <i class="fa-regular fa-circle-xmark"></i>
+                            <i :class="cancelIcon"></i>
                             Close
                         </button>
                     </div>
@@ -533,23 +550,23 @@ function viewJsonChilds(prop: JsonProperty, children?: JsonProperty[]): any {
                                     <span>{{ viewObj.isEdit ? 'IMPORT' : 'VIEW' }} JSON</span>
                                     <div class="button-group">
                                         <button type="button" @click="emit('jeditor:copy', props.copy)">
-                                            <i class="fa-regular fa-copy"></i>
+                                            <i :class="copyIcon"></i>
                                             Copy
                                         </button>
                                         <button type="button" @click="props.validate()">
-                                            <i class="fa-solid fa-spell-check"></i>
+                                            <i :class="validateIcon"></i>
                                             Validate
                                         </button>
                                         <button type="button" @click="props.format()">
-                                            <i class="fa-solid fa-code"></i>
+                                            <i :class="formatIcon"></i>
                                             Format
                                         </button>
                                         <button type="button" v-if="viewObj.isEdit" @click.stop="onImport(props.validate)">
-                                            <i class="fa-regular fa-circle-down"></i>
+                                            <i :class="importIcon"></i>
                                             Import
                                         </button>
                                         <button type="button" @click="dialogObj.show = false">
-                                            <i class="fa-regular fa-circle-xmark"></i>
+                                            <i :class="cancelIcon"></i>
                                             Close
                                         </button>
                                     </div>

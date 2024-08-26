@@ -92,8 +92,8 @@ function onCopy(item: JsonProperty) {
           <li :class="{ 'disabled-prop': element.disabled }">
               <span>
                   <span class="pre-operator purple">{{ getPreOperator(element) }}</span>
-                  <i class="fa-solid"
-                    :class="element.isOpen ? 'fa-chevron-down' : 'fa-chevron-right'"
+                  <i
+                    :class="element.isOpen ? expandIcon : collapsedIcon"
                     @click="element.isOpen = !element.isOpen"
                     v-if="element.children?.length > 0"/>
                   <code>
@@ -101,7 +101,7 @@ function onCopy(item: JsonProperty) {
                       <span class="red" v-if="element.type === 'string'">"{{ element.value }}"</span>
                       <span class="green" v-else-if="getPreOperator(element) === '■'">{{ element.value }}</span>
                       <span class="brown" v-else-if="element.type === 'array' && element.children?.length === 0 && element.value?.length > 0">{{ element.value }}</span>
-                      <i class="fa-regular fa-copy v-json-formatter-tooltip btn-space" @click="onCopy(element)" v-if="element.key !== '*'">
+                      <i class="v-json-formatter-tooltip btn-space" :class="copyIcon" @click="onCopy(element)" v-if="element.key !== '*'">
                         <span class="tooltip">Copy path</span>
                       </i>
                   </code>
@@ -111,6 +111,9 @@ function onCopy(item: JsonProperty) {
                   :type="element.type"
                   :group="group" 
                   :level="level + 1"
+                  :expand-icon="expandIcon"
+                  :collapsed-icon="collapsedIcon"
+                  :copy-icon="copyIcon"
                   v-model="element.children"
                   @copy="onCopy"/>
           </li>

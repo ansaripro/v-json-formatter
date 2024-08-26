@@ -149,8 +149,8 @@ function onPastePath(item: JsonProperty) {
           <li v-if="isOpen">
               <span>
                   <span class="pre-operator purple">{{ getPreOperator(element) }}</span>
-                  <i class="fa-solid"
-                    :class="element.isOpen ? 'fa-chevron-down' : 'fa-chevron-right'"
+                  <i
+                    :class="element.isOpen ? expandIcon : collapsedIcon"
                     @click="element.isOpen = !element.isOpen"
                     v-if="element.children?.length > 0 && (element.type === 'object' || element.type === 'array')"/>
                   <code>
@@ -161,16 +161,16 @@ function onPastePath(item: JsonProperty) {
                       <span class="red" v-else-if="element.type === 'string'">"{{ element.value }}"</span>
                       <span class="green" v-else-if="getPreOperator(element) === '■'">{{ element.value }}</span>
                       <span class="brown" v-else-if="element.type === 'array' && element.children?.length === 0 && element.value?.length > 0">{{ element.value }}</span>
-                      <i class="fa-solid fa-plus v-json-formatter-tooltip btn-space" @click="localAddProp(element)" v-if="localCanAddProp(element)">
+                      <i class="v-json-formatter-tooltip btn-space" :class="addIcon" @click="localAddProp(element)" v-if="localCanAddProp(element)">
                         <span class="tooltip">Add</span>
                       </i>
-                      <i class="fa-solid fa-pen-to-square v-json-formatter-tooltip btn-space" @click="localEditProp(element, index)" v-if="level !== 0 && !(element.type === 'object' && element.parentType === 'array')">
+                      <i class="v-json-formatter-tooltip btn-space" :class="editIcon" @click="localEditProp(element, index)" v-if="level !== 0 && !(element.type === 'object' && element.parentType === 'array')">
                         <span class="tooltip">Edit</span>
                       </i>
-                      <i class="fa-solid fa-paste v-json-formatter-tooltip btn-space" @click="onPastePath(element)" v-if="element.isCustom && element.children?.length === 0">
+                      <i class="v-json-formatter-tooltip btn-space" :class="pasteIcon" @click="onPastePath(element)" v-if="element.isCustom && element.children?.length === 0">
                         <span class="tooltip">Paste path</span>
                       </i>
-                      <i class="fa-regular fa-trash-can v-json-formatter-tooltip btn-space" @click="localDeleteProp(index)">
+                      <i class="v-json-formatter-tooltip btn-space" :class="deleteIcon" @click="localDeleteProp(index)">
                         <span class="tooltip">Delete</span>
                       </i>
                   </code>
@@ -182,6 +182,13 @@ function onPastePath(item: JsonProperty) {
                   :level="level + 1"
                   :is-open="element.isOpen"
                   :copy-item="props.copyItem"
+                  :expand-icon="expandIcon"
+                  :collapsed-icon="collapsedIcon"
+                  :copy-icon="copyIcon"
+                  :paste-icon="pasteIcon"
+                  :add-icon="addIcon"
+                  :edit-icon="editIcon"
+                  :delete-icon="deleteIcon"
                   v-model="element.children"
                   v-model:global-id="jsonNodeId"
                   @edit-property="editProp"

@@ -5,6 +5,29 @@ export interface JEvent {
     data?: any,
 }
 
+export interface JsonDragNDropProps {
+    group: string,
+    modelValue?: JsonProperty[],
+    jsonString: string,
+    title?: string,
+    dragPanelTitle?: string,
+    dropPanelTitle?: string,
+    height?: number | string | undefined,
+    placeholderItems?: PlaceholderItem[],
+    expandIcon: string,
+    collapsedIcon: string,
+    copyIcon: string,
+    pasteIcon: string,
+    addIcon: string,
+    editIcon: string,
+    deleteIcon: string,
+    saveIcon: string,
+    cancelIcon: string,
+    validateIcon: string,
+    formatIcon: string,
+    importIcon: string,
+}
+
 export interface JsonDragProps {
     group: string,
     text?: string,
@@ -12,6 +35,9 @@ export interface JsonDragProps {
     level?: number,
     name?: string,
     type?: string,
+    expandIcon: string,
+    collapsedIcon: string,
+    copyIcon: string,
 }
 
 export interface JsonDropProps {
@@ -23,6 +49,13 @@ export interface JsonDropProps {
     isOpen?: boolean,
     copyItem?: JsonProperty,
     globalId: number,
+    expandIcon: string,
+    collapsedIcon: string,
+    copyIcon: string,
+    pasteIcon: string,
+    addIcon: string,
+    editIcon: string,
+    deleteIcon: string,
 }
 
 export interface JsonEditorProps {
@@ -30,17 +63,6 @@ export interface JsonEditorProps {
     width?: number | string | undefined,
     height?: number | string | undefined,
     readOnly: boolean,
-}
-
-export interface JsonDragNDropProps {
-    group: string,
-    modelValue?: JsonProperty[],
-    jsonString: string,
-    title?: string,
-    dragPanelTitle?: string,
-    dropPanelTitle?: string,
-    height?: number | string | undefined,
-    placeholderItems?: PlaceholderItem[]
 }
 
 export type JTypes = 'string' | 'number' | 'boolean' | 'object' | 'array';
