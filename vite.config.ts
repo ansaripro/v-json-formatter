@@ -11,7 +11,8 @@ export default defineConfig({
     lib: {
       entry: resolve(__dirname, "src/plugin/index.ts"),
       name: "v-json-formatter",
-      fileName: (format) => `v-json-formatter.${format}.js`,
+      fileName: "v-json-formatter",
+      formats: ["es", "cjs", "umd"],
     },
     rollupOptions: {
       // make sure to externalize deps that shouldn't be bundled

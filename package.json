@@ -1,7 +1,7 @@
 {
   "name": "v-json-formatter",
-  "private": true,
-  "version": "0.0.0",
+  "private": false,
+  "version": "0.0.1",
   "type": "module",
   "keywords": [
     "json",
@@ -15,6 +15,9 @@
   "files": [
     "dist"
   ],
+  "publishConfig": {
+    "access": "public"
+  },
   "main": "./dist/v-json-formatter.umd.cjs",
   "module": "./dist/v-json-formatter.js",
   "exports": {

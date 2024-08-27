@@ -1,9 +1,27 @@
-# Vue 3 + TypeScript + Vite
+## Vue Json Formatter
+<p align="center">
+  <a href="https://www.npmjs.com/package/v-json-formatter">
+    <img alt="NPM Downloads" src="https://img.shields.io/npm/d18m/v-json-formatter">
+  </a>
+  <a href="https://www.npmjs.com/package/v-json-formatter">
+    <img alt="NPM Downloads" src="https://img.shields.io/npm/dm/v-json-formatter">
+  </a>
+  <br>
+  <a href="https://github.com/ansaripro/v-json-formatter/blob/main/LICENSE.md">
+    <img alt="GitHub License" src="https://img.shields.io/github/license/ansaripro/v-json-formatter">
+  </a>
+  <a href="https://www.npmjs.com/package/v-json-formatter">
+    <img alt="NPM Version" src="https://img.shields.io/npm/v/v-json-formatter">
+  </a>
+</p>
 
-This template should help get you started developing with Vue 3 and TypeScript in Vite. The template uses Vue 3 `<script setup>` SFCs, check out the [script setup docs](https://v3.vuejs.org/api/sfc-script-setup.html#sfc-script-setup) to learn more.
+VJsonFormatter is a Json transformation component for Vue based application. Like if there any requirment for your application where you want to allowed user to tranform/convert your current JSON with User defined JSON format. Then you can achieve it with this component.
 
-## Recommended Setup
+## [Documentation](https://ansaripro.github.io/v-json-formatter/)
 
-- [VS Code](https://code.visualstudio.com/) + [Vue - Official](https://marketplace.visualstudio.com/items?itemName=Vue.volar) (previously Volar) and disable Vetur
+## License
 
-- Use [vue-tsc](https://github.com/vuejs/language-tools/tree/master/packages/tsc) for performing the same type checking from the command line, or for generating d.ts files for SFCs.
+Copyright (c) 2024 AnsariPro  
+Licensed under the [MIT license](https://github.com/ansaripro/v-json-formatter/blob/main/LICENSE.md).
+
+
