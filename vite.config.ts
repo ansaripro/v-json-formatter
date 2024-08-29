@@ -6,8 +6,7 @@ import { resolve } from 'path';
 export default defineConfig({
   plugins: [vue()],
   build: {
-    cssCodeSplit: true,
-    target: "esnext",
+    target: "ESNext",
     lib: {
       entry: resolve(__dirname, "src/plugin/index.ts"),
       name: "v-json-formatter",

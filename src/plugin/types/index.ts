@@ -26,6 +26,12 @@ export interface JsonDragNDropProps {
     validateIcon: string,
     formatIcon: string,
     importIcon: string,
+    operatorClass?: string,
+    keyClass?: string,
+    pathClass?: string,
+    stringClass?: string,
+    valueClass?: string,
+    arrayClass?: string,
 }
 
 export interface JsonDragProps {
@@ -38,6 +44,11 @@ export interface JsonDragProps {
     expandIcon: string,
     collapsedIcon: string,
     copyIcon: string,
+    operatorClass?: string,
+    keyClass?: string,
+    stringClass?: string,
+    valueClass?: string,
+    arrayClass?: string,
 }
 
 export interface JsonDropProps {
@@ -56,6 +67,12 @@ export interface JsonDropProps {
     addIcon: string,
     editIcon: string,
     deleteIcon: string,
+    operatorClass?: string,
+    keyClass?: string,
+    pathClass?: string,
+    stringClass?: string,
+    valueClass?: string,
+    arrayClass?: string,
 }
 
 export interface JsonEditorProps {

@@ -3,13 +3,19 @@ import { computed } from 'vue'
 import type { JsonDropProps, JsonProperty, EditJProperty, JEvent, JParentType } from '../types/index'
 import Draggable from 'vuedraggable';
 
-const props = withDefaults(defineProps<JsonDropProps>(), { 
-    // internal props
-    level: 0,
-    name: 'jdrag',
-    type: '',
-    isOpen: true,
-    globalId: 0,
+const props = withDefaults(defineProps<JsonDropProps>(), {
+  // internal props
+  level: 0,
+  name: 'jdrag',
+  type: '',
+  isOpen: true,
+  globalId: 0,
+  operatorClass: 'purple',
+  keyClass: 'blue',
+  pathClass: 'darkgold',
+  stringClass: 'red',
+  valueClass: 'green',
+  arrayClass: 'brown'
 });
 
 const emit = defineEmits([
@@ -70,7 +76,7 @@ function rootAddProp(type: JParentType) {
   jsonModel.value = [o];
 };
 function localCanAddProp(element: JsonProperty) {
-  return element.path?.length === 0 && (element.type === 'object' || 
+  return element.path?.length === 0 && (element.type === 'object' ||
     (element.type === 'array' && !(element.children?.length === 0 && element.value?.length > 0))
   );
 };
@@ -93,12 +99,12 @@ function localAddProp(element: JsonProperty) {
 };
 function localEditProp(element: JsonProperty, index: number) {
   editProp({
-      element: element,
-      index: index,
-      level: props.level,
+    element: element,
+    index: index,
+    level: props.level,
   });
 };
-function editProp(obj: EditJProperty) { 
+function editProp(obj: EditJProperty) {
   emit('editProperty', obj);
 };
 function localDeleteProp(index: number) {
@@ -140,60 +146,62 @@ function onPastePath(item: JsonProperty) {
     <button type="button" @click="rootAddProp('array')">Create Array</button>
   </div>
   <draggable
-      tag="ul"
-      item-key="id"
-      :list="jsonModel"
-      :class="[level === 0 ? 'v-json-formatter': '', type, name]"
-      :group="{ name: group }">
-      <template #item="{ element, index }">
-          <li v-if="isOpen">
-              <span>
-                  <span class="pre-operator purple">{{ getPreOperator(element) }}</span>
-                  <i
-                    :class="element.isOpen ? expandIcon : collapsedIcon"
-                    @click="element.isOpen = !element.isOpen"
-                    v-if="element.children?.length > 0 && (element.type === 'object' || element.type === 'array')"/>
-                  <code>
-                      <span v-show="element.key?.length > 0" class="blue">{{ element.key }}: </span>
-                      <span class="darkgold" v-if="element.path?.length > 0">
-                          {{ element.path }}
-                      </span>
-                      <span class="red" v-else-if="element.type === 'string'">"{{ element.value }}"</span>
-                      <span class="green" v-else-if="getPreOperator(element) === '■'">{{ element.value }}</span>
-                      <span class="brown" v-else-if="element.type === 'array' && element.children?.length === 0 && element.value?.length > 0">{{ element.value }}</span>
-                      <i class="v-json-formatter-tooltip btn-space" :class="addIcon" @click="localAddProp(element)" v-if="localCanAddProp(element)">
-                        <span class="tooltip">Add</span>
-                      </i>
-                      <i class="v-json-formatter-tooltip btn-space" :class="editIcon" @click="localEditProp(element, index)" v-if="level !== 0 && !(element.type === 'object' && element.parentType === 'array')">
-                        <span class="tooltip">Edit</span>
-                      </i>
-                      <i class="v-json-formatter-tooltip btn-space" :class="pasteIcon" @click="onPastePath(element)" v-if="element.isCustom && element.children?.length === 0">
-                        <span class="tooltip">Paste path</span>
-                      </i>
-                      <i class="v-json-formatter-tooltip btn-space" :class="deleteIcon" @click="localDeleteProp(index)">
-                        <span class="tooltip">Delete</span>
-                      </i>
-                  </code>
-              </span>
-              <v-json-drop v-if="!(element.type === 'array' && element.children?.length === 0 && element.value?.length > 0)"
-                  :name="`${name}-${index}`"
-                  :type="element.type"
-                  :group="element.path?.length === 0 ? group : element.key"
-                  :level="level + 1"
-                  :is-open="element.isOpen"
-                  :copy-item="props.copyItem"
-                  :expand-icon="expandIcon"
-                  :collapsed-icon="collapsedIcon"
-                  :copy-icon="copyIcon"
-                  :paste-icon="pasteIcon"
-                  :add-icon="addIcon"
-                  :edit-icon="editIcon"
-                  :delete-icon="deleteIcon"
-                  v-model="element.children"
-                  v-model:global-id="jsonNodeId"
-                  @edit-property="editProp"
-                  @event="emit('event', $event)"/>
-          </li>
-      </template>
+    tag="ul"
+    item-key="id"
+    :list="jsonModel"
+    :class="[level === 0 ? 'v-json-formatter' : '', type, name]"
+    :group="{ name: group }">
+    <template #item="{ element, index }">
+      <li v-if="isOpen">
+        <span>
+          <span class="pre-operator" :class="operatorClass">{{ getPreOperator(element) }}</span>
+          <i :class="element.isOpen ? expandIcon : collapsedIcon" @click="element.isOpen = !element.isOpen"
+            v-if="element.children?.length > 0 && (element.type === 'object' || element.type === 'array')" />
+          <code>
+            <span v-show="element.key?.length > 0" :class="keyClass">{{ element.key }}: </span>
+            <span :class="pathClass" v-if="element.path?.length > 0">{{ element.path }}</span>
+            <span :class="stringClass" v-else-if="element.type === 'string'">"{{ element.value }}"</span>
+            <span :class="valueClass" v-else-if="getPreOperator(element) === '■'">{{ element.value }}</span>
+            <span :class="arrayClass" v-else-if="element.type === 'array' && element.children?.length === 0 && element.value?.length > 0">{{ element.value }}</span>
+            <i class="v-json-formatter-tooltip btn-space" :class="addIcon" @click="localAddProp(element)" v-if="localCanAddProp(element)">
+              <span class="tooltip">Add</span>
+            </i>
+            <i class="v-json-formatter-tooltip btn-space" :class="editIcon" @click="localEditProp(element, index)" v-if="level !== 0 && !(element.type === 'object' && element.parentType === 'array')">
+              <span class="tooltip">Edit</span>
+            </i>
+            <i class="v-json-formatter-tooltip btn-space" :class="pasteIcon" @click="onPastePath(element)" v-if="element.isCustom && element.children?.length === 0">
+              <span class="tooltip">Paste path</span>
+            </i>
+            <i class="v-json-formatter-tooltip btn-space" :class="deleteIcon" @click="localDeleteProp(index)">
+              <span class="tooltip">Delete</span>
+            </i>
+          </code>
+        </span>
+        <v-json-drop v-if="!(element.type === 'array' && element.children?.length === 0 && element.value?.length > 0)"
+          :name="`${name}-${index}`"
+          :type="element.type"
+          :group="element.path?.length === 0 ? group : element.key"
+          :level="level + 1"
+          :is-open="element.isOpen"
+          :copy-item="props.copyItem"
+          :expand-icon="expandIcon"
+          :collapsed-icon="collapsedIcon"
+          :copy-icon="copyIcon"
+          :paste-icon="pasteIcon"
+          :add-icon="addIcon"
+          :edit-icon="editIcon"
+          :delete-icon="deleteIcon"
+          :operator-class="operatorClass"
+          :key-class="keyClass"
+          :path-class="pathClass"
+          :string-class="stringClass"
+          :value-class="valueClass"
+          :array-class="arrayClass"
+          v-model="element.children"
+          v-model:global-id="jsonNodeId"
+          @edit-property="editProp"
+          @event="emit('event', $event)" />
+      </li>
+    </template>
   </draggable>
 </template>

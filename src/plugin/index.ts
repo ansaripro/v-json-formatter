@@ -1,6 +1,5 @@
 import './style.css';
 import { App } from 'vue';
-import type * as Types from './types/index';
 import VJsonDrag  from "./components/VJsonDrag.vue";
 import VJsonDrop  from "./components/VJsonDrop.vue";
 import VJsonDragNDrop from "./components/VJsonDragNDrop.vue";
@@ -17,4 +16,5 @@ const VJsonFormatterPlugin = {
 
 export default VJsonFormatterPlugin;
 
-export { VJsonDrag, VJsonDrop, VJsonDragNDrop, VJsonEditor, Types };
+export * from './types/index';
+export { VJsonDrag, VJsonDrop, VJsonDragNDrop, VJsonEditor };
